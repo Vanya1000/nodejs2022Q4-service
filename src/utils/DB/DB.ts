@@ -52,7 +52,7 @@ class DBUsers extends DBEntity<UserEntity, ChangeUserDTO, CreateUserDTO> {
     const created: UserEntity = {
       ...dto,
       id: crypto.randomUUID(),
-      version: 0,
+      version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };

@@ -33,7 +33,10 @@ export class UsersService {
     if (user.password !== dto.oldPassword) {
       throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
     }
-    return this.db.users.update(id, { password: dto.newPassword });
+    const { password, ...rest } = this.db.users.update(id, {
+      password: dto.newPassword,
+    });
+    return rest;
   }
 
   remove(id: string) {
@@ -41,8 +44,7 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    const delUser = this.db.users.delete(id);
-    const { password, ...rest } = delUser;
+    const { password, ...rest } = this.db.users.delete(id);
     return rest;
   }
 }
