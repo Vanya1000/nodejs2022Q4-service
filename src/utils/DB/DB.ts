@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import DBAlbums from './entities/DBAlbum';
 import DBArtists from './entities/DBArtists';
 import DBUsers from './entities/DBUsers';
 
@@ -6,4 +7,5 @@ import DBUsers from './entities/DBUsers';
 export default class DB {
   users = new DBUsers();
   artists = new DBArtists();
+  album = new DBAlbums();
 }
