@@ -1,8 +1,8 @@
-import { IsString, IsDefined } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsString({ message: 'Must be a string' })
   login: string;
-  @IsDefined({ message: 'Must be defined' })
+  @IsString({ message: 'Must be a string' })
   password: string;
 }
