@@ -17,7 +17,7 @@ export class TrackService {
   }
 
   findOne(id: string) {
-    const track = this.db.track.findOne('id', id);
+    const track = this.tryGetOne(id);
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -25,7 +25,7 @@ export class TrackService {
   }
 
   update(id: string, dto: UpdateTrackDto) {
-    const track = this.db.track.findOne('id', id);
+    const track = this.tryGetOne(id);
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
@@ -33,10 +33,18 @@ export class TrackService {
   }
 
   remove(id: string) {
-    const track = this.db.track.findOne('id', id);
+    const track = this.tryGetOne(id);
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
     return this.db.track.delete(id);
+  }
+
+  tryGetOne(id: string) {
+    return this.db.track.findOne('id', id);
+  }
+
+  tryGetMany(ids: string[]) {
+    return this.db.track.findManyInArrayAnyOf('id', ids);
   }
 }

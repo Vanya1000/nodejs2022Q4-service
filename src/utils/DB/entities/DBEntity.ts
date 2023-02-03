@@ -14,6 +14,13 @@ export default abstract class DBEntity<
     return this.entities;
   }
 
+  findManyInArrayAnyOf = <K extends keyof Entity>(
+    key: K,
+    values: Entity[K][],
+  ) => {
+    return this.entities.filter((entity) => values.includes(entity[key]));
+  };
+
   findOne<K extends keyof Entity>(key: K, value: Entity[K]) {
     return this.entities.find((entity) => entity[key] === value);
   }
