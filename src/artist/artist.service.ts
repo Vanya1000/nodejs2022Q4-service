@@ -5,8 +5,6 @@ import DB from 'src/utils/DB/DB';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { FavsService } from './../favs/favs.service';
-import { TrackModule } from './../track/track.module';
-import { AlbumModule } from './../album/album.module';
 import { TrackService } from './../track/track.service';
 import { AlbumService } from './../album/album.service';
 

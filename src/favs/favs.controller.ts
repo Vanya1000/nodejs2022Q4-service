@@ -2,19 +2,13 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
-  Query,
-  HostParam,
   Req,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FavsService } from './favs.service';
-import { CreateFavDto } from './dto/create-fav.dto';
-import { UpdateFavDto } from './dto/update-fav.dto';
 import { FavsPathType } from './types/type';
 import { HttpCode } from '@nestjs/common/decorators';
 import { StatusCodes } from 'http-status-codes';
