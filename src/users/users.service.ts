@@ -7,13 +7,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private db: DB) {}
   create(dto: CreateUserDto) {
-    const { password, ...rest } = this.db.users.create(dto);
-    return rest;
+    return this.db.users.create(dto);
   }
 
   findAll() {
-    const allUsers = this.db.users.findMany();
-    return allUsers.map(({ password, ...rest }) => rest);
+    return this.db.users.findMany();
   }
 
   findOne(id: string) {
@@ -21,8 +19,7 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    const { password, ...rest } = user;
-    return rest;
+    return user;
   }
 
   update(id: string, dto: UpdateUserDto) {
@@ -33,10 +30,9 @@ export class UsersService {
     if (user.password !== dto.oldPassword) {
       throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
     }
-    const { password, ...rest } = this.db.users.update(id, {
+    return this.db.users.update(id, {
       password: dto.newPassword,
     });
-    return rest;
   }
 
   remove(id: string) {
@@ -44,7 +40,6 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    const { password, ...rest } = this.db.users.delete(id);
-    return rest;
+    return this.db.users.delete(id);
   }
 }
