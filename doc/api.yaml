@@ -629,7 +629,7 @@ paths:
       tags:
         - Favorites
       summary: Get all favorites
-      description: Gets all favorites movies, tracks and books
+      description: Gets all favorites albums, tracks and artists
       responses:
         200:
           description: Successful operation
