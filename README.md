@@ -8,17 +8,20 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Vanya1000/nodejs2022Q4-service
 ```
 
 ## Installing NPM modules
 
 ```
+git checkout develop
+```
+```
 npm install
 ```
 
 ## Running application
-
+Rename .env.example file to .env and you can set PORT
 ```
 npm start
 ```
@@ -27,11 +30,25 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Other variants running application
+
+Build application
+```
+npm run build
+```
+
+Run dev mode
+```
+npm start:dev
+```
+
+
+
 ## Testing
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all tests 
 
 ```
 npm run test
@@ -43,11 +60,6 @@ To run only one of all test suites
 npm run test -- <path to suite>
 ```
 
-To run all test with authorization
-
-```
-npm run test:auth
-```
 
 To run only specific test suite with authorization
 
