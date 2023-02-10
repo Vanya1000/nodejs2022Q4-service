@@ -4,6 +4,7 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker](https://www.docker.com/)
 
 ## Downloading
 
@@ -11,26 +12,36 @@
 git clone https://github.com/Vanya1000/nodejs2022Q4-service
 ```
 
-## Installing NPM modules
+## Select branch
 
 ```
-git checkout develop
-```
-```
-npm install
+git checkout docker_orm
 ```
 
-## Running application
+## Running application with Docker
 Rename .env.example file to .env and you can set PORT
 ```
-npm start
+npm run docker
+```
+
+## Vulnerabilities scanning
+
+```
+npm run scan
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
-## Other variants running application
+
+
+
+
+
+
+
+<!-- ## Other variants running application
 
 Build application
 ```
@@ -66,19 +77,4 @@ To run only specific test suite with authorization
 ```
 npm run test:auth -- <path to suite>
 ```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+ -->
