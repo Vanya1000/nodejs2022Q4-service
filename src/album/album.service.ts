@@ -6,48 +6,45 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { FavsService } from './../favs/favs.service';
 import { TrackService } from './../track/track.service';
+import { Album } from './entities/album.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumService {
   constructor(
+    @InjectRepository(Album)
+    private albumRepository: Repository<Album>,
     @Inject(forwardRef(() => FavsService))
     @Inject(forwardRef(() => TrackService))
     private favsService: FavsService,
     private tracksService: TrackService,
     private db: DB,
   ) {}
-  create(dto: CreateAlbumDto) {
-    return this.db.album.create(dto);
+  async create(dto: CreateAlbumDto) {
+    return await this.albumRepository.save(dto);
   }
 
-  findAll() {
-    return this.db.album.findMany();
+  async findAll() {
+    return await this.albumRepository.find();
   }
 
-  findOne(id: string) {
-    const album = this.tryGetOne(id);
+  async findOne(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
     return album;
   }
 
-  update(id: string, dto: UpdateAlbumDto) {
-    const album = this.tryGetOne(id);
-    if (!album) {
-      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
-    }
-    return this.db.album.update(id, dto);
+  async update(id: string, dto: UpdateAlbumDto) {
+    const album = await this.findOne(id);
+    return this.albumRepository.save({ ...album, ...dto });
   }
 
-  remove(id: string) {
-    const album = this.tryGetOne(id);
-    if (!album) {
-      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
-    }
-    this.favsService.removeFromAnother('albums', id);
-    this.tracksService.tryFindManyAndNullAlbumId(id);
-    return this.db.album.delete(id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.albumRepository.delete(id);
   }
 
   tryGetOne(id: string) {
