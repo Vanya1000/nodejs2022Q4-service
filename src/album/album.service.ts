@@ -1,11 +1,8 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
-import DB from 'src/utils/DB/DB';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { FavsService } from './../favs/favs.service';
-import { TrackService } from './../track/track.service';
 import { Album } from './entities/album.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,11 +12,6 @@ export class AlbumService {
   constructor(
     @InjectRepository(Album)
     private albumRepository: Repository<Album>,
-    @Inject(forwardRef(() => FavsService))
-    @Inject(forwardRef(() => TrackService))
-    private favsService: FavsService,
-    private tracksService: TrackService,
-    private db: DB,
   ) {}
   async create(dto: CreateAlbumDto) {
     return await this.albumRepository.save(dto);
@@ -47,7 +39,7 @@ export class AlbumService {
     return await this.albumRepository.delete(id);
   }
 
-  tryGetOne(id: string) {
+  /* tryGetOne(id: string) {
     return this.db.album.findOne('id', id);
   }
 
@@ -64,5 +56,5 @@ export class AlbumService {
       });
     }
     return albums;
-  }
+  } */
 }

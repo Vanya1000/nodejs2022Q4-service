@@ -9,17 +9,9 @@ import { AlbumService } from './../album/album.service';
 
 @Injectable()
 export class FavsService {
-  constructor(
-    @Inject(forwardRef(() => ArtistService))
-    @Inject(forwardRef(() => AlbumService))
-    @Inject(forwardRef(() => TrackService))
-    private artistService: ArtistService,
-    private albumService: AlbumService,
-    private trackService: TrackService,
-    private db: DB,
-  ) {}
+  constructor(private db: DB) {}
 
-  private getEntity(type: FavsPathType) {
+  /* private getEntity(type: FavsPathType) {
     switch (type) {
       case 'artists':
         return this.artistService;
@@ -28,21 +20,21 @@ export class FavsService {
       case 'tracks':
         return this.trackService;
     }
-  }
+  } */
 
   findAll() {
-    const favs = this.db.favs.findMany();
+    /* const favs = this.db.favs.findMany();
     const favsWithEntities = {};
     Object.entries(favs).forEach(([key, value]) => {
       favsWithEntities[key] = this.getEntity(key as FavsPathType).tryGetMany(
         value,
       );
     });
-    return favsWithEntities;
+    return favsWithEntities; */
   }
 
   create(type: FavsPathType, id: string) {
-    const track = this.getEntity(type).tryGetOne(id);
+    /* const track = this.getEntity(type).tryGetOne(id);
     if (!track) {
       throw new HttpException(
         'Track not found',
@@ -56,24 +48,24 @@ export class FavsService {
     this.db.favs.add(type, id);
     return {
       message: `Id: ${id} successfully added to ${type}`,
-    };
+    }; */
   }
 
   remove(type: FavsPathType, id: string) {
-    const entity = this.db.favs.findOneByType(type);
+    /* const entity = this.db.favs.findOneByType(type);
     if (!entity.includes(id)) {
       throw new HttpException('Not in favs', HttpStatus.NOT_FOUND);
     }
     this.db.favs.delete(type, id);
     return {
       message: `Id: ${id} successfully removed from ${type}`,
-    };
+    }; */
   }
 
-  removeFromAnother(type: FavsPathType, id: string) {
+  /* removeFromAnother(type: FavsPathType, id: string) {
     const entity = this.db.favs.findOneByType(type);
     if (entity.includes(id)) {
       this.db.favs.delete(type, id);
     }
-  }
+  } */
 }
