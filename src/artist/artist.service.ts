@@ -7,10 +7,15 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { FavsService } from './../favs/favs.service';
 import { TrackService } from './../track/track.service';
 import { AlbumService } from './../album/album.service';
+import { Artist } from './entities/artist.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ArtistService {
   constructor(
+    @InjectRepository(Artist)
+    private artistRepository: Repository<Artist>,
     @Inject(forwardRef(() => FavsService))
     @Inject(forwardRef(() => AlbumService))
     @Inject(forwardRef(() => TrackService))
@@ -19,39 +24,35 @@ export class ArtistService {
     private tracksService: TrackService,
     private db: DB,
   ) {}
-  create(dto: CreateArtistDto) {
-    return this.db.artists.create(dto);
+  async create(dto: CreateArtistDto) {
+    return await this.artistRepository.save(dto);
   }
 
-  findAll() {
-    return this.db.artists.findMany();
+  async findAll() {
+    return await this.artistRepository.find({
+      relations: {
+        albums: true,
+        tracks: true,
+      },
+    });
   }
 
-  findOne(id: string) {
-    const artist = this.tryGetOne(id);
+  async findOne(id: string) {
+    const artist = await this.artistRepository.findOneBy({ id });
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
     return artist;
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    const artist = this.tryGetOne(id);
-    if (!artist) {
-      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
-    }
-    return this.db.artists.update(id, updateArtistDto);
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artist = await this.findOne(id);
+    return await this.artistRepository.save({ ...artist, ...updateArtistDto });
   }
 
-  remove(id: string) {
-    const artist = this.tryGetOne(id);
-    if (!artist) {
-      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
-    }
-    this.favsService.removeFromAnother('artists', id);
-    this.albumsService.tryFindManyAndNullArtistId(id);
-    this.tracksService.tryFindManyAndNullArtistId(id);
-    return this.db.artists.delete(id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.artistRepository.delete(id);
   }
 
   tryGetOne(id: string) {
