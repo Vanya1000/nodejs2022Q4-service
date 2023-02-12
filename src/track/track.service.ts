@@ -5,45 +5,43 @@ import DB from 'src/utils/DB/DB';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { FavsService } from './../favs/favs.service';
+import { Track } from './entities/track.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
   constructor(
+    @InjectRepository(Track)
+    private trackRepository: Repository<Track>,
     @Inject(forwardRef(() => FavsService))
     private favsService: FavsService,
     private db: DB,
   ) {}
-  create(dto: CreateTrackDto) {
-    return this.db.track.create(dto);
+  async create(dto: CreateTrackDto) {
+    return await this.trackRepository.save(dto);
   }
 
-  findAll() {
-    return this.db.track.findMany();
+  async findAll() {
+    return await this.trackRepository.find();
   }
 
-  findOne(id: string) {
-    const track = this.tryGetOne(id);
+  async findOne(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
     if (!track) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
     return track;
   }
 
-  update(id: string, dto: UpdateTrackDto) {
-    const track = this.tryGetOne(id);
-    if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-    }
-    return this.db.track.update(id, dto);
+  async update(id: string, dto: UpdateTrackDto) {
+    const track = await this.findOne(id);
+    return this.trackRepository.save({ ...track, ...dto });
   }
 
-  remove(id: string) {
-    const track = this.tryGetOne(id);
-    if (!track) {
-      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-    }
-    this.favsService.removeFromAnother('tracks', id);
-    return this.db.track.delete(id);
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.trackRepository.delete(id);
   }
 
   tryGetOne(id: string) {
