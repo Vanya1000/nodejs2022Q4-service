@@ -39,22 +39,7 @@ export class AlbumService {
     return await this.albumRepository.delete(id);
   }
 
-  /* tryGetOne(id: string) {
-    return this.db.album.findOne('id', id);
+  async tryFindOne(id: string) {
+    return await this.albumRepository.findOneBy({ id });
   }
-
-  tryGetMany(ids: string[]) {
-    return this.db.album.findManyInArrayAnyOf('id', ids);
-  }
-
-  tryFindManyAndNullArtistId(id: string) {
-    const albums = this.db.album.findMany('artistId', id);
-    if (albums) {
-      albums.forEach((album) => {
-        album.artistId = null;
-        this.db.album.update(album.id, album);
-      });
-    }
-    return albums;
-  } */
 }

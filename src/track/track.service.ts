@@ -39,31 +39,7 @@ export class TrackService {
     return await this.trackRepository.delete(id);
   }
 
-  /* tryGetOne(id: string) {
-    return this.db.track.findOne('id', id);
+  async tryFindOne(id: string) {
+    return await this.trackRepository.findOneBy({ id });
   }
-
-  tryGetMany(ids: string[]) {
-    return this.db.track.findManyInArrayAnyOf('id', ids);
-  }
-
-  tryFindManyAndNullArtistId(id: string) {
-    const tracks = this.db.track.findMany('artistId', id);
-    if (tracks) {
-      tracks.forEach((track) => {
-        track.artistId = null;
-        this.db.track.update(track.id, track);
-      });
-    }
-  }
-
-  tryFindManyAndNullAlbumId(id: string) {
-    const tracks = this.db.track.findMany('albumId', id);
-    if (tracks) {
-      tracks.forEach((track) => {
-        track.albumId = null;
-        this.db.track.update(track.id, track);
-      });
-    }
-  } */
 }

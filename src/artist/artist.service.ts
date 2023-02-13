@@ -38,12 +38,8 @@ export class ArtistService {
     await this.findOne(id);
     return await this.artistRepository.delete(id);
   }
-  /* 
-  tryGetOne(id: string) {
-    return this.db.artists.findOne('id', id);
-  }
 
-  tryGetMany(ids: string[]) {
-    return this.db.artists.findManyInArrayAnyOf('id', ids);
-  } */
+  async tryFindOne(id: string) {
+    return await this.artistRepository.findOneBy({ id });
+  }
 }

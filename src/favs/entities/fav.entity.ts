@@ -8,21 +8,12 @@ export class Favorites {
   @PrimaryColumn({ default: 1 })
   id: number;
 
-  @OneToMany(() => Artist, (artist) => artist.favorites, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @OneToMany(() => Artist, (artist) => artist.favorites)
   artists: Artist[];
 
-  @OneToMany(() => Album, (album) => album.favorites, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @OneToMany(() => Album, (album) => album.favorites)
   albums: Album[];
 
-  @OneToMany(() => Track, (track) => track.favorites, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @OneToMany(() => Track, (track) => track.favorites)
   tracks: Track[];
 }
