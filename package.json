@@ -8,6 +8,9 @@
   "scripts": {
     "docker": "docker-compose up",
     "scan": "docker scan nodejs2022q4-service-nest",
+    "typeorm": "npx typeorm-ts-node-esm -d src/ormconfig.ts",
+    "migration:generate": "npm run typeorm migration:generate ./migrations/Initial",
+    "migration:create": "npx typeorm migration:create ./migrations/Initial",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
