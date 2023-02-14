@@ -20,11 +20,16 @@ export class FavsService {
   ) {}
 
   async findAll() {
-    const { albums, artists, tracks } = await this.favoritesRepository.findOne({
+    const favs = await this.favoritesRepository.findOne({
       where: { id: 1 },
       relations: ['albums', 'artists', 'tracks'],
     });
-    return { albums, artists, tracks };
+
+    if (!favs) {
+      await this.favoritesRepository.save({ id: 1 });
+      return this.findAll();
+    }
+    return favs;
   }
 
   async create(type: FavsPathType, id: string) {

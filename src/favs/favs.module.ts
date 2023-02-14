@@ -9,7 +9,7 @@ import { TrackModule } from './../track/track.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Favorites /* , Artist, Album, Track */]),
+    TypeOrmModule.forFeature([Favorites]),
     ArtistModule,
     AlbumModule,
     TrackModule,

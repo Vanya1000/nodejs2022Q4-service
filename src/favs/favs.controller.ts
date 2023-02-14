@@ -10,16 +10,19 @@ import {
 import { Request } from 'express';
 import { FavsService } from './favs.service';
 import { FavsPathType } from './types/type';
-import { HttpCode } from '@nestjs/common/decorators';
+import { HttpCode, UseInterceptors } from '@nestjs/common/decorators';
 import { StatusCodes } from 'http-status-codes';
+import { ClassSerializerInterceptor } from '@nestjs/common/serializer';
+import { Favorites } from './entities/fav.entity';
 
 @Controller('favs')
 export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.favsService.findAll();
+  async findAll() {
+    return new Favorites(await this.favsService.findAll());
   }
 
   @Post(['track/:id', 'album/:id', 'artist/:id'])
