@@ -4,7 +4,7 @@ services:
   nest:
     container_name: nest
     build: ./
-    restart: unless-stopped
+    restart: always
     ports:
       - ${PORT}:${PORT}
     depends_on:
@@ -15,7 +15,7 @@ services:
   postgres:
     container_name: postgres
     build: /database
-    restart: unless-stopped
+    restart: always
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
