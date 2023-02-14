@@ -16,9 +16,9 @@ export const ormconfig = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   entities: [User, Artist, Album, Track, Favorites],
-  migrations: ['../migrations/*{.ts,.js}'],
-  migrationsTableName: 'migrations',
-  logging: true,
+  migrations: ['dist/migrations/*{.ts,.js}'],
+  migrationsRun: true,
+  synchronize: false,
 } as DataSourceOptions;
 
 export default new DataSource(ormconfig);
