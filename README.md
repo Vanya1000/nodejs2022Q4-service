@@ -24,36 +24,21 @@ Rename .env.example file to .env and you can set PORT
 npm run docker
 ```
 
-## Vulnerabilities scanning
-
-```
-npm run scan
-```
-
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Vulnerabilities scanning
+After build images with command 'npm run docker' you can ran following commands:
 
-
-
-
-
-
-
-<!-- ## Other variants running application
-
-Build application
+Run scan image with application
 ```
-npm run build
+npm run scan:app
 ```
-
-Run dev mode
+Run scan image with postgreSQL image
 ```
-npm start:dev
+npm run scan:db
 ```
-
-
 
 ## Testing
 
@@ -70,11 +55,3 @@ To run only one of all test suites
 ```
 npm run test -- <path to suite>
 ```
-
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
- -->
