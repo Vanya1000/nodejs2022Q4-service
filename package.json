@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "docker": "docker-compose up",
+    "testsIntoContainer": "docker exec nest npm run test",
     "scan:app": "docker scan nodejs2022q4-service-nest",
     "scan:db": "docker scan nodejs2022q4-service-postgres",
     "typeorm": "npx typeorm-ts-node-esm -d src/ormconfig.ts",

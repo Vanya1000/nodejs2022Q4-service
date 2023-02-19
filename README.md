@@ -19,7 +19,7 @@ git checkout docker_orm
 ```
 
 ## Running application with Docker
-Rename .env.example file to .env and you can set PORT
+Rename .env.example file to .env and you can set PORT (For convenience, I did not delete the .env file)
 ```
 npm run docker
 ```
@@ -40,7 +40,20 @@ Run scan image with postgreSQL image
 npm run scan:db
 ```
 
+## Running application without Docker
+You should install all deps:
+```
+npm install
+```
+
 ## Testing
+
+For run tests into container run without npm install:
+```
+npm run testsIntoContainer
+```
+
+If you want run tests without container you should at first install all dependencies see above
 
 After application running open new terminal and enter:
 
