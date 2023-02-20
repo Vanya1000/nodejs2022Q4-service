@@ -4,34 +4,60 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker](https://www.docker.com/)
 
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Vanya1000/nodejs2022Q4-service
 ```
 
-## Installing NPM modules
+## Select branch
 
 ```
-npm install
+git checkout docker_orm
 ```
 
-## Running application
-
+## Running application with Docker
+Rename .env.example file to .env and you can set PORT (For convenience, I did not delete the .env file)
 ```
-npm start
+npm run docker
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Vulnerabilities scanning
+After build images with command 'npm run docker' you can ran following commands:
+
+Run scan image with application
+```
+npm run scan:app
+```
+Run scan image with postgreSQL image
+```
+npm run scan:db
+```
+
 ## Testing
 
-After application running open new terminal and enter:
+For run tests without npm install:
+```
+npm run testsIntoContainer
+```
 
-To run all tests without authorization
+If you want run tests without container you should at first install all dependencies
+```
+npm install
+```
+
+After that run docker:
+```
+npm run docker
+```
+
+To run all tests 
 
 ```
 npm run test
@@ -42,31 +68,3 @@ To run only one of all test suites
 ```
 npm run test -- <path to suite>
 ```
-
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
