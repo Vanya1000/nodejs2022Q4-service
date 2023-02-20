@@ -40,22 +40,22 @@ Run scan image with postgreSQL image
 npm run scan:db
 ```
 
-## Running application without Docker
-You should install all deps:
-```
-npm install
-```
-
 ## Testing
 
-For run tests into container run without npm install:
+For run tests without npm install:
 ```
 npm run testsIntoContainer
 ```
 
-If you want run tests without container you should at first install all dependencies see above
+If you want run tests without container you should at first install all dependencies
+```
+npm install
+```
 
-After application running open new terminal and enter:
+After that run docker:
+```
+npm run docker
+```
 
 To run all tests 
 
