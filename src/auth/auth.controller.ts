@@ -1,18 +1,12 @@
+import { UpdateTokenDTO } from './dto/update-token.dto';
 import { User } from './../users/entities/user.entity';
-import { UseInterceptors } from '@nestjs/common/decorators';
+import { UseInterceptors, HttpCode } from '@nestjs/common/decorators';
 import { ClassSerializerInterceptor } from '@nestjs/common/serializer';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import { StatusCodes } from 'http-status-codes';
 
 @Controller('auth')
 export class AuthController {
@@ -24,13 +18,15 @@ export class AuthController {
     return new User(await this.authService.signup(createUserDto));
   }
 
+  @HttpCode(StatusCodes.OK)
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
   }
 
+  @HttpCode(StatusCodes.OK)
   @Post('refresh')
-  refresh(@Body() loginUserDto: LoginUserDto) {
-    return this.authService.refresh(loginUserDto);
+  refresh(@Body() updateTokenDTO: UpdateTokenDTO) {
+    return this.authService.refresh(updateTokenDTO);
   }
 }

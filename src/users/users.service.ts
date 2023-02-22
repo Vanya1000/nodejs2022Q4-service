@@ -36,7 +36,8 @@ export class UsersService {
 
   async update(id: string, dto: UpdateUserDto) {
     const user = await this.findOne(id);
-    if (user.password !== dto.oldPassword) {
+    const isEqual = await this.comparePassword(dto.oldPassword, user.password);
+    if (!isEqual) {
       throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
     }
     user.password = dto.newPassword;
@@ -50,5 +51,9 @@ export class UsersService {
 
   async getUserByEmail(login: string) {
     return await this.usersRepository.findOne({ where: { login } });
+  }
+
+  async comparePassword(password: string, hashPassword: string) {
+    return await bcrypt.compare(password, hashPassword);
   }
 }

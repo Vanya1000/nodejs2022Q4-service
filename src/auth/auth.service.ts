@@ -1,7 +1,8 @@
+import { UpdateTokenDTO } from './dto/update-token.dto';
 import { User } from './../users/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from './../users/dto/create-user.dto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt/dist';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -19,11 +20,21 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
     const user = await this.validateUser(loginUserDto);
-    return this.generateToken(user);
+    return this.generateToken(user.id, user.login);
   }
 
-  async refresh(createAuthDto: LoginUserDto) {
-    return 'This action adds a new auth';
+  async refresh(updateTokenDTO: UpdateTokenDTO) {
+    try {
+      const { userId, login } = await this.jwtService.verify(
+        updateTokenDTO.refreshToken,
+        {
+          secret: /* process.env.JWT_SECRET_REFRESH_KEY */ 'secret2',
+        },
+      );
+      return this.generateToken(userId, login);
+    } catch (err) {
+      throw new ForbiddenException({ message: 'Invalid refresh token' });
+    }
   }
 
   private async validateUser(loginUserDto: LoginUserDto) {
@@ -35,13 +46,17 @@ export class AuthService {
     if (user && isPasswordEquals) {
       return user;
     }
-    throw new UnauthorizedException({ message: 'Invalid email or password' });
+    throw new ForbiddenException({ message: 'Invalid email or password' });
   }
 
-  private generateToken(user: User) {
-    const payload = { userId: user.id, login: user.login };
+  private generateToken(userId: string, login: string) {
+    const payload = { userId, login };
     return {
       accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        secret: /* process.env.JWT_SECRET_REFRESH_KEY */ 'secret2',
+        expiresIn: /* process.env.TOKEN_REFRESH_EXPIRE_TIME */ '120s',
+      }),
     };
   }
 }
