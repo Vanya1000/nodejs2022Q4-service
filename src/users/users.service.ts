@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -12,13 +13,13 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
   async create(dto: CreateUserDto) {
-    const user = await this.usersRepository.findOne({
-      where: { login: dto.login },
-    });
+    const user = await this.getUserByEmail(dto.login);
     if (user) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
-    return await this.usersRepository.save(dto);
+    const hashPassword = await bcrypt.hash(dto.password, 5);
+    const userWithHashPassword = { ...dto, password: hashPassword };
+    return await this.usersRepository.save(userWithHashPassword);
   }
 
   async findAll() {
@@ -45,5 +46,9 @@ export class UsersService {
   async remove(id: string) {
     const user = await this.findOne(id);
     return await this.usersRepository.remove(user);
+  }
+
+  async getUserByEmail(login: string) {
+    return await this.usersRepository.findOne({ where: { login } });
   }
 }
