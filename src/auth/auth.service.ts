@@ -1,5 +1,4 @@
 import { UpdateTokenDTO } from './dto/update-token.dto';
-import { User } from './../users/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from './../users/dto/create-user.dto';
 import { Injectable, ForbiddenException } from '@nestjs/common';
@@ -28,7 +27,7 @@ export class AuthService {
       const { userId, login } = await this.jwtService.verify(
         updateTokenDTO.refreshToken,
         {
-          secret: /* process.env.JWT_SECRET_REFRESH_KEY */ 'secret2',
+          secret: process.env.JWT_SECRET_REFRESH_KEY,
         },
       );
       return this.generateToken(userId, login);
@@ -39,14 +38,18 @@ export class AuthService {
 
   private async validateUser(loginUserDto: LoginUserDto) {
     const user = await this.userService.getUserByEmail(loginUserDto.login);
-    const isPasswordEquals = await bcrypt.compare(
-      loginUserDto.password,
-      user.password,
-    );
-    if (user && isPasswordEquals) {
-      return user;
+    if (user) {
+      const isPasswordEquals = await bcrypt.compare(
+        loginUserDto.password,
+        user.password,
+      );
+
+      if (user && isPasswordEquals) {
+        return user;
+      }
     }
-    throw new ForbiddenException({ message: 'Invalid email or password' });
+
+    throw new ForbiddenException({ message: 'Invalid login or password' });
   }
 
   private generateToken(userId: string, login: string) {
@@ -54,8 +57,8 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, {
-        secret: /* process.env.JWT_SECRET_REFRESH_KEY */ 'secret2',
-        expiresIn: /* process.env.TOKEN_REFRESH_EXPIRE_TIME */ '120s',
+        secret: process.env.JWT_SECRET_REFRESH_KEY,
+        expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
       }),
     };
   }

@@ -17,7 +17,10 @@ export class UsersService {
     if (user) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
-    const hashPassword = await bcrypt.hash(dto.password, 5);
+    const hashPassword = await bcrypt.hash(
+      dto.password,
+      +process.env.CRYPT_SALT,
+    );
     const userWithHashPassword = { ...dto, password: hashPassword };
     return await this.usersRepository.save(userWithHashPassword);
   }
@@ -36,8 +39,8 @@ export class UsersService {
 
   async update(id: string, dto: UpdateUserDto) {
     const user = await this.findOne(id);
-    const isEqual = await this.comparePassword(dto.oldPassword, user.password);
-    if (!isEqual) {
+    const isEqualPass = await bcrypt.compare(dto.oldPassword, user.password);
+    if (!isEqualPass) {
       throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
     }
     user.password = dto.newPassword;
@@ -51,9 +54,5 @@ export class UsersService {
 
   async getUserByEmail(login: string) {
     return await this.usersRepository.findOne({ where: { login } });
-  }
-
-  async comparePassword(password: string, hashPassword: string) {
-    return await bcrypt.compare(password, hashPassword);
   }
 }
