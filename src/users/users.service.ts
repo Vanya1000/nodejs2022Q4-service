@@ -13,10 +13,6 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
   async create(dto: CreateUserDto) {
-    const user = await this.getUserByEmail(dto.login);
-    if (user) {
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
-    }
     const hashPassword = await bcrypt.hash(
       dto.password,
       +process.env.CRYPT_SALT,
