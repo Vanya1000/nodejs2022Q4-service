@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
@@ -10,6 +11,7 @@ import { ormconfig } from './ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/jwt-auth.guard';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { JwtGuard } from './auth/jwt-auth.guard';
     TrackModule,
     FavsModule,
     AuthModule,
+    LoggerModule,
   ],
   exports: [],
   controllers: [],
@@ -33,4 +36,8 @@ import { JwtGuard } from './auth/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
