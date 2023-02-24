@@ -33,10 +33,12 @@ export class JwtGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     try {
       const authHeader = req.headers.authorization;
-      const bearer = authHeader.split(' ')[0];
-      const token = authHeader.split(' ')[1];
+      const bearer = authHeader?.split(' ')[0];
+      const token = authHeader?.split(' ')[1];
       if (bearer !== 'Bearer' || !token) {
-        throw new UnauthorizedException({ message: 'Invalid token' });
+        throw new UnauthorizedException({
+          message: 'You dont pass token in autorization header',
+        });
       }
 
       let user: unknown;
@@ -49,6 +51,9 @@ export class JwtGuard implements CanActivate {
       }
       req.user = user;
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException({ message: 'Invalid token' });
     }
     return true;

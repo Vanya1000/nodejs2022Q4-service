@@ -3,6 +3,7 @@ import {
   Injectable,
   ArgumentMetadata,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
@@ -16,6 +17,9 @@ export class ValidationPipe implements PipeTransform<any> {
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
+      if (errors[0].property === 'refreshToken') {
+        throw new UnauthorizedException('No refreshToken in body');
+      }
       throw new BadRequestException('Validation failed');
     }
     return value;
