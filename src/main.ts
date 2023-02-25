@@ -1,3 +1,4 @@
+import { MyLogger } from './logger/logger.service';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
@@ -9,7 +10,10 @@ import * as yaml from 'js-yaml';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 4000;
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(MyLogger));
   const swaggerDocument = yaml.load(
     await readFile(join('.', 'doc', 'api.yaml'), 'utf8'),
   ) as OpenAPIObject;

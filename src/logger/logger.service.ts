@@ -1,20 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class LoggerService {
-  log(message: string) {
-    console.log(message);
-  }
-  error(message: string, trace: string) {
-    console.error(message, trace);
-  }
-  warn(message: string) {
-    console.warn(message);
-  }
-  debug(message: string) {
-    console.debug(message);
-  }
-  verbose(message: string) {
-    console.log(message);
-  }
+export class MyLogger extends ConsoleLogger {
+  /* error(message: any, stack?: string, context?: string) {
+    // add your tailored logic here
+    super.error(...arguments);
+  } */
 }
