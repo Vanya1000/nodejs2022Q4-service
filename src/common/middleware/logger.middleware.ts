@@ -15,10 +15,17 @@ export class LoggerMiddleware implements NestMiddleware {
       const queryToJSON = JSON.stringify(query);
       const bodyToJSON = JSON.stringify(body);
       const reqTime = Date.now() - reqStart;
-      this.logger.log(
-        `Method: "${method}", URL: "${originalUrl}", Query: ${queryToJSON}, Body: ${bodyToJSON}, User agent: ${userAgent}, Status code: "${statusCode}", Request time: ${reqTime}ms`,
-        'HTTP',
-      );
+      const message = `Method: "${method}", URL: "${originalUrl}", Query: ${queryToJSON}, Body: ${bodyToJSON}, User agent: ${userAgent}, Status code: "${statusCode}", Request time: ${reqTime}ms`;
+
+      if (statusCode >= 500) {
+        return this.logger.error(message);
+      }
+
+      if (statusCode >= 400) {
+        return this.logger.warn(message);
+      }
+
+      return this.logger.log(message);
     });
     next();
   }
