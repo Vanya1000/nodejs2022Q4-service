@@ -6,9 +6,9 @@ type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
 
 @Injectable()
 export class MyLogger extends ConsoleLogger {
-  private logsFolderPath = path.join(process.cwd(), 'src', 'logs');
+  private logsFolderPath = path.join(process.cwd(), 'logs');
 
-  private maxLogSize = 10 * 1024; // 10 KB // todo: set max log size from env
+  private maxLogSize = process.env.MAX_SIZE_LOG_FILE_IN_KB || 10;
 
   private writeErrorLogStream: fs.WriteStream;
   private writeLogStream: fs.WriteStream;
@@ -16,13 +16,12 @@ export class MyLogger extends ConsoleLogger {
   constructor() {
     super();
     const logLevels: LogLevel[] = ['error', 'warn', 'log', 'debug', 'verbose'];
-    const logLevel = 'log'; // process.env.LOG_LEVEL as LogLevel; // todo: set log level from env
+    const logLevel = process.env.LOG_LEVEL as LogLevel;
     let indexLog = logLevels.indexOf(logLevel);
     if (indexLog === -1) {
       indexLog = 2; // if wrong log level is set, set log level to 'log'
     }
     const choosenLogLevel = logLevels.slice(0, indexLog + 1);
-    console.log(choosenLogLevel); // todo: remove
     this.setLogLevels(choosenLogLevel);
 
     if (!fs.existsSync(this.logsFolderPath)) {
@@ -31,7 +30,6 @@ export class MyLogger extends ConsoleLogger {
   }
 
   error(message: any, trace?: string, context?: string) {
-    // console.log(message);
     super.error(message, trace, context);
     this.writeToLogFile('error', message, context, trace);
   }
@@ -95,7 +93,6 @@ export class MyLogger extends ConsoleLogger {
 
       const streamSize = this.writeLogStream.bytesWritten;
 
-      // todo: check if this works
       if (streamSize > this.maxLogSize) {
         this.writeLogStream.destroy();
         this.createWriteStream(logFilePath);

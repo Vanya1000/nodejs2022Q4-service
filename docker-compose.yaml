@@ -13,6 +13,7 @@ services:
       - my-network
     volumes:
       - ./src:/app/src
+      - ./logs:/app/logs
 
   postgres:
     container_name: postgres
