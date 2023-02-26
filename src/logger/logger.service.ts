@@ -8,7 +8,7 @@ type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
 export class MyLogger extends ConsoleLogger {
   private logsFolderPath = path.join(process.cwd(), 'logs');
 
-  private maxLogSize = process.env.MAX_SIZE_LOG_FILE_IN_KB || 10;
+  private maxLogSize = +process.env.MAX_SIZE_LOG_FILE_IN_KB * 1024 || 30 * 1024;
 
   private writeErrorLogStream: fs.WriteStream;
   private writeLogStream: fs.WriteStream;
