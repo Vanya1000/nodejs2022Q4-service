@@ -13,6 +13,8 @@ import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { JwtGuard } from './auth/jwt-auth.guard';
 import { LoggerModule } from './logger/logger.module';
 import { CustomGlobalExceptionFilter } from './common/exception-filter/custom-global-exception.filter';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { CustomGlobalExceptionFilter } from './common/exception-filter/custom-gl
     LoggerModule,
   ],
   exports: [],
-  controllers: [],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
@@ -39,6 +41,7 @@ import { CustomGlobalExceptionFilter } from './common/exception-filter/custom-gl
       provide: APP_FILTER,
       useClass: CustomGlobalExceptionFilter,
     },
+    AppService,
   ],
 })
 export class AppModule implements NestModule {
