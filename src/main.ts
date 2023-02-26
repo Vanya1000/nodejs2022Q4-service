@@ -21,5 +21,14 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(PORT, () => console.log(`Server started on port = ${PORT}`));
+
+  const logger = app.get(MyLogger);
+  process.on('uncaughtException', (err: Error) => {
+    logger.error(err, err.stack, 'UncaughtException');
+  });
+
+  process.on('unhandledRejection', (err: Error) => {
+    logger.error(err, err.stack, 'UnhandledRejection');
+  });
 }
 bootstrap();
