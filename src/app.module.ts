@@ -9,9 +9,10 @@ import { FavsModule } from './favs/favs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormconfig } from './ormconfig';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { JwtGuard } from './auth/jwt-auth.guard';
 import { LoggerModule } from './logger/logger.module';
+import { CustomGlobalExceptionFilter } from './common/exception-filter/custom-global-exception.filter';
 
 @Module({
   imports: [
@@ -33,6 +34,10 @@ import { LoggerModule } from './logger/logger.module';
     {
       provide: APP_GUARD,
       useClass: JwtGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CustomGlobalExceptionFilter,
     },
   ],
 })

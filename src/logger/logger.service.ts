@@ -31,8 +31,9 @@ export class MyLogger extends ConsoleLogger {
   }
 
   error(message: any, trace?: string, context?: string) {
+    // console.log(message);
     super.error(message, trace, context);
-    this.writeToLogFile('error', message, context);
+    this.writeToLogFile('error', message, context, trace);
   }
 
   warn(message: any, context?: string) {
@@ -72,17 +73,17 @@ export class MyLogger extends ConsoleLogger {
       );
 
       if (!this.writeErrorLogStream) {
-        this.createWriteStream(logFilePath);
+        this.createWriteErrorStream(logFilePath);
       }
 
       const streamSize = this.writeErrorLogStream.bytesWritten;
 
       if (streamSize > this.maxLogSize) {
         this.writeErrorLogStream.destroy();
-        this.createWriteStream(logFilePath);
+        this.createWriteErrorStream(logFilePath);
       }
 
-      this.writeErrorLogStream.write(logMessage + '\n', 'utf-8');
+      this.writeErrorLogStream.write(logMessage + trace + '\n', 'utf-8');
     } else {
       const logFilePath = path.join(
         this.logsFolderPath,
@@ -109,4 +110,10 @@ export class MyLogger extends ConsoleLogger {
       flags: 'a',
     });
   }
+
+  private createWriteErrorStream = (logFilePath: string) => {
+    this.writeErrorLogStream = fs.createWriteStream(logFilePath, {
+      flags: 'a',
+    });
+  };
 }
