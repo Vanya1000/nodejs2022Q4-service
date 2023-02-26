@@ -18,14 +18,14 @@ export class LoggerMiddleware implements NestMiddleware {
       const message = `Method: "${method}", URL: "${originalUrl}", Query: ${queryToJSON}, Body: ${bodyToJSON}, User agent: ${userAgent}, Status code: "${statusCode}", Request time: ${reqTime}ms`;
 
       if (statusCode >= 500) {
-        return this.logger.error(message);
+        return this.logger.error(message, 'HTTP');
       }
 
       if (statusCode >= 400) {
-        return this.logger.warn(message);
+        return this.logger.warn(message, 'HTTP');
       }
 
-      return this.logger.log(message);
+      return this.logger.log(message, 'HTTP');
     });
     next();
   }

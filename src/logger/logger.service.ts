@@ -6,28 +6,38 @@ type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
 
 @Injectable()
 export class MyLogger extends ConsoleLogger {
-  private maxLogSize = 1000000;
-  private logFile = 'log.log';
-  private logErrorFile = 'log-error.log';
-  // this.options.logLevels = ['error'];
+  private logsFolderPath = path.join(process.cwd(), 'src', 'logs');
+
+  private maxLogSize = 10 * 1024; // 10 KB // todo: set max log size from env
+
+  private writeErrorLogStream: fs.WriteStream;
+  private writeLogStream: fs.WriteStream;
 
   constructor() {
     super();
-    const logLevel = process.env.LOG_LEVEL || 2;
     const logLevels: LogLevel[] = ['error', 'warn', 'log', 'debug', 'verbose'];
-    const choosenLogLevel = logLevels.slice(0, +logLevel + 1);
-    this.setLogLevels(['error']);
-  }
+    const logLevel = 'log'; // process.env.LOG_LEVEL as LogLevel; // todo: set log level from env
+    let indexLog = logLevels.indexOf(logLevel);
+    if (indexLog === -1) {
+      indexLog = 2; // if wrong log level is set, set log level to 'log'
+    }
+    const choosenLogLevel = logLevels.slice(0, indexLog + 1);
+    console.log(choosenLogLevel); // todo: remove
+    this.setLogLevels(choosenLogLevel);
 
-  // Logs are written to a file.
+    if (!fs.existsSync(this.logsFolderPath)) {
+      fs.mkdirSync(this.logsFolderPath);
+    }
+  }
 
   error(message: any, trace?: string, context?: string) {
     super.error(message, trace, context);
-    console.log(message);
+    this.writeToLogFile('error', message, context);
   }
 
   warn(message: any, context?: string) {
     super.warn(message, context);
+    this.writeToLogFile('warn', message, context);
   }
 
   log(message: any, context?: string) {
@@ -37,10 +47,12 @@ export class MyLogger extends ConsoleLogger {
 
   debug(message: any, context?: string) {
     super.debug(message, context);
+    this.writeToLogFile('debug', message, context);
   }
 
   verbose(message: any, context?: string) {
     super.verbose(message, context);
+    this.writeToLogFile('verbose', message, context);
   }
 
   private writeToLogFile(
@@ -49,34 +61,52 @@ export class MyLogger extends ConsoleLogger {
     context?: string,
     trace?: string,
   ) {
-    const logMessage = `Type: [${type}], Time: [${this.getTimestamp()}], Context: [${context}] Info: [${message}]`;
-    const logsFolderPath = path.join(process.cwd(), 'src', 'logs');
-    if (!fs.existsSync(logsFolderPath)) {
-      console.log('Creating logs folder');
-      fs.mkdirSync(logsFolderPath);
+    if (!this.options.logLevels.includes(type)) {
+      return;
     }
-
+    const logMessage = `Type: [${type}], Time: [${this.getTimestamp()}], Context: [${context}] Info: [${message}]`;
     if (type === 'error') {
-      const logFilePath = path.join(logsFolderPath, this.logErrorFile);
-      this.tryWriteToLogFile(logFilePath, logMessage);
+      const logFilePath = path.join(
+        this.logsFolderPath,
+        `${new Date().toISOString()}-error.log`,
+      );
+
+      if (!this.writeErrorLogStream) {
+        this.createWriteStream(logFilePath);
+      }
+
+      const streamSize = this.writeErrorLogStream.bytesWritten;
+
+      if (streamSize > this.maxLogSize) {
+        this.writeErrorLogStream.destroy();
+        this.createWriteStream(logFilePath);
+      }
+
+      this.writeErrorLogStream.write(logMessage + '\n', 'utf-8');
     } else {
-      const logFilePath = path.join(logsFolderPath, this.logFile);
-      this.tryWriteToLogFile(logFilePath, logMessage);
+      const logFilePath = path.join(
+        this.logsFolderPath,
+        `${new Date().toISOString()}-log.log`,
+      );
+      if (!this.writeLogStream) {
+        this.createWriteStream(logFilePath);
+      }
+
+      const streamSize = this.writeLogStream.bytesWritten;
+
+      // todo: check if this works
+      if (streamSize > this.maxLogSize) {
+        this.writeLogStream.destroy();
+        this.createWriteStream(logFilePath);
+      }
+
+      this.writeLogStream.write(logMessage + '\n', 'utf-8');
     }
   }
 
-  private tryWriteToLogFile(logFilePath: string, logMessage: string) {
-    if (fs.existsSync(logFilePath)) {
-      const stats = fs.statSync(logFilePath);
-      const fileSize = Math.round(stats.size / 1024);
-      if (fileSize > this.maxLogSize) {
-        console.log('creating new log file');
-      } else {
-        fs.appendFileSync(logFilePath, logMessage + '\n', 'utf-8');
-        console.log('appending to log file');
-      }
-    } else {
-      fs.writeFileSync(logFilePath, logMessage + '\n', 'utf-8');
-    }
+  private createWriteStream(logFilePath: string) {
+    this.writeLogStream = fs.createWriteStream(logFilePath, {
+      flags: 'a',
+    });
   }
 }
