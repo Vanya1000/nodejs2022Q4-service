@@ -10,12 +10,21 @@ export class LoggerMiddleware implements NestMiddleware {
     const reqStart = Date.now();
     const { method, originalUrl, query, body } = req;
     const userAgent = req.get('user-agent') || '';
+
+    let resBody;
+    const originalSend = res.send;
+    res.send = function (body: any): Response<any> {
+      resBody = body;
+      return originalSend.call(res, body);
+    };
+
     res.on('finish', () => {
       const { statusCode } = res;
       const queryToJSON = JSON.stringify(query);
       const bodyToJSON = JSON.stringify(body);
       const reqTime = Date.now() - reqStart;
-      const message = `Method: "${method}", URL: "${originalUrl}", Query: ${queryToJSON}, Body: ${bodyToJSON}, User agent: ${userAgent}, Status code: "${statusCode}", Request time: ${reqTime}ms`;
+
+      const message = `Method: "${method}", URL: "${originalUrl}", Query: ${queryToJSON}, RequestBody: ${bodyToJSON}, User agent: ${userAgent}, ResponseBody: ${resBody} Status code: "${statusCode}", Request time: ${reqTime}ms`;
 
       if (statusCode >= 500) {
         return this.logger.error(message, 'no trace', 'HTTP');
