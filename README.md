@@ -12,10 +12,19 @@
 git clone https://github.com/Vanya1000/nodejs2022Q4-service
 ```
 
+```
+cd nodejs2022Q4-service
+```
+
 ## Select branch
 
 ```
-git checkout docker_orm
+git checkout auth_log
+```
+
+## Install all dependencies
+```
+npm install
 ```
 
 ## Running application with Docker
@@ -24,9 +33,6 @@ Rename .env.example file to .env and you can set PORT (For convenience, I did no
 npm run docker
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Vulnerabilities scanning
 After build images with command 'npm run docker' you can ran following commands:
@@ -42,29 +48,8 @@ npm run scan:db
 
 ## Testing
 
-For run tests without npm install:
-```
-npm run testsIntoContainer
-```
-
-If you want run tests without container you should at first install all dependencies
-```
-npm install
-```
-
-After that run docker:
-```
-npm run docker
-```
-
-To run all tests 
+To run all auth tests 
 
 ```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
+npm run test:auth
 ```
