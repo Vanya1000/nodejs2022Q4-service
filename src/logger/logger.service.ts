@@ -1,4 +1,5 @@
 import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { EOL } from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -8,10 +9,10 @@ type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
 export class MyLogger extends ConsoleLogger {
   private logsFolderPath = path.join(process.cwd(), 'logs');
 
-  private maxLogSize = +process.env.MAX_SIZE_LOG_FILE_IN_KB * 1024 || 30 * 1024;
+  private maxLogSize = +process.env.MAX_SIZE_LOG_FILE_IN_KB * 1024 || 10 * 1024;
 
-  private writeErrorLogStream: fs.WriteStream;
-  private writeLogStream: fs.WriteStream;
+  private writeErrorLogPath: string;
+  private writeLogPath: string;
 
   constructor() {
     super();
@@ -64,53 +65,64 @@ export class MyLogger extends ConsoleLogger {
       return;
     }
     const logMessage = `Type: [${type}], Time: [${this.getTimestamp()}], Context: [${context}] Info: [${message}]`;
-    if (type === 'error') {
-      const logFilePath = path.join(
-        this.logsFolderPath,
-        `${new Date().toISOString()}-error.log`,
-      );
-
-      if (!this.writeErrorLogStream) {
-        this.createWriteErrorStream(logFilePath);
+    try {
+      if (type === 'error') {
+        if (fs.existsSync(this.writeErrorLogPath)) {
+          const stat = fs.statSync(this.writeErrorLogPath);
+          const fileSize = Math.round(stat.size);
+          if (fileSize < this.maxLogSize) {
+            fs.appendFileSync(
+              this.writeErrorLogPath,
+              EOL + logMessage + EOL + trace || '' + EOL,
+              'utf-8',
+            );
+          } else {
+            const logFilePath = path.join(
+              this.logsFolderPath,
+              `${new Date().toISOString()}-error.log`,
+            );
+            this.writeErrorLogPath = logFilePath;
+            fs.writeFileSync(
+              this.writeErrorLogPath,
+              EOL + logMessage + EOL + trace || '' + EOL,
+              'utf-8',
+            );
+          }
+        } else {
+          const logFilePath = path.join(
+            this.logsFolderPath,
+            `${new Date().toISOString()}-error.log`,
+          );
+          this.writeErrorLogPath = logFilePath;
+          fs.writeFileSync(
+            this.writeErrorLogPath,
+            EOL + logMessage + EOL + trace || '' + EOL,
+            'utf-8',
+          );
+        }
+      } else {
+        if (fs.existsSync(this.writeLogPath)) {
+          const stat = fs.statSync(this.writeLogPath);
+          const fileSize = Math.round(stat.size);
+          if (fileSize < this.maxLogSize) {
+            fs.appendFileSync(this.writeLogPath, message + EOL, 'utf-8');
+          } else {
+            const logFilePath = path.join(
+              this.logsFolderPath,
+              `${new Date().toISOString()}-log.log`,
+            );
+            this.writeLogPath = logFilePath;
+            fs.writeFileSync(this.writeLogPath, message + EOL, 'utf-8');
+          }
+        } else {
+          const logFilePath = path.join(
+            this.logsFolderPath,
+            `${new Date().toISOString()}-log.log`,
+          );
+          this.writeLogPath = logFilePath;
+          fs.writeFileSync(this.writeLogPath, message + EOL, 'utf-8');
+        }
       }
-
-      const streamSize = this.writeErrorLogStream.bytesWritten;
-
-      if (streamSize > this.maxLogSize) {
-        this.writeErrorLogStream.destroy();
-        this.createWriteErrorStream(logFilePath);
-      }
-
-      this.writeErrorLogStream.write(logMessage + trace + '\n', 'utf-8');
-    } else {
-      const logFilePath = path.join(
-        this.logsFolderPath,
-        `${new Date().toISOString()}-log.log`,
-      );
-      if (!this.writeLogStream) {
-        this.createWriteStream(logFilePath);
-      }
-
-      const streamSize = this.writeLogStream.bytesWritten;
-
-      if (streamSize > this.maxLogSize) {
-        this.writeLogStream.destroy();
-        this.createWriteStream(logFilePath);
-      }
-
-      this.writeLogStream.write(logMessage + '\n', 'utf-8');
-    }
+    } catch {}
   }
-
-  private createWriteStream(logFilePath: string) {
-    this.writeLogStream = fs.createWriteStream(logFilePath, {
-      flags: 'a',
-    });
-  }
-
-  private createWriteErrorStream = (logFilePath: string) => {
-    this.writeErrorLogStream = fs.createWriteStream(logFilePath, {
-      flags: 'a',
-    });
-  };
 }
