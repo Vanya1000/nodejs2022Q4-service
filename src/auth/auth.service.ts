@@ -1,7 +1,7 @@
 import { UpdateTokenDTO } from './dto/update-token.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from './../users/dto/create-user.dto';
-import { Injectable, ForbiddenException, HttpException } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt/dist';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';

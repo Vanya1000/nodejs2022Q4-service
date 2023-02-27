@@ -25,6 +25,7 @@ async function bootstrap() {
   const logger = app.get(MyLogger);
   process.on('uncaughtException', (err: Error) => {
     logger.error(err, err.stack, 'UncaughtException');
+    process.exit(1);
   });
 
   process.on('unhandledRejection', (err: Error) => {

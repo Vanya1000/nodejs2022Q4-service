@@ -9,7 +9,7 @@ type LogLevel = 'error' | 'warn' | 'log' | 'debug' | 'verbose';
 export class MyLogger extends ConsoleLogger {
   private logsFolderPath = path.join(process.cwd(), 'logs');
 
-  private maxLogSize = +process.env.MAX_SIZE_LOG_FILE_IN_KB * 1024 || 10 * 1024;
+  private maxLogSize = +process.env.MAX_SIZE_LOG_FILE_IN_KB * 1024 || 25 * 1024;
 
   private writeErrorLogPath: string;
   private writeLogPath: string;

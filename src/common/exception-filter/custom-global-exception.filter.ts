@@ -52,8 +52,8 @@ export class CustomGlobalExceptionFilter implements ExceptionFilter {
       ctx.getRequest().body,
     )}, Status code: "${httpStatus}"`;
 
-    this.logger.error(messageForLogger, stackTraceForLogger, 'GlobalException');
-
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+
+    this.logger.error(messageForLogger, stackTraceForLogger, 'GlobalException');
   }
 }
